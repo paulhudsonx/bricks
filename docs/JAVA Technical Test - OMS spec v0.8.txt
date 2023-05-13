@@ -1,5 +1,4 @@
 ﻿The task is to create a simple system ordering system for a fictional organisation that sells bricks. No UI is required.
-
 Please create a working system in Java which demonstrates these features.  Commit your code to a public Github repository and send the link to us.  We encourage you to commit you code often, at least at the completion of every story.
 
 Your design should be guided by the tests you write (TDD). We're looking for strong OO design, unit tests and a clear implementation.
