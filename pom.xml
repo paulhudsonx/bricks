@@ -94,7 +94,7 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>${project.parent.version}</version>
         <configuration>
-          <mainClass>com.atlassian.App</mainClass>
+          <mainClass>com.caci.bricks.App</mainClass>
           <layout>ZIP</layout>
         </configuration>
       </plugin>
