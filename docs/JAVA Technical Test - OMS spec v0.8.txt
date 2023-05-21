@@ -12,7 +12,7 @@ I want to submit new orders for bricks
 So I can start customers’ orders
 
     Given
-        A customer wants to buy any number of bricks
+        A customerId wants to buy any number of bricks
     When 
         A create Order request for a number of bricks is submitted
     Then
@@ -24,7 +24,7 @@ I want to retrieve orders
 So I can display simple customers’ orders
 
     Given
-        A customer has submitted an order for some bricks
+        A customerId has submitted an order for some bricks
     When 
         A Get Order request is submitted with a valid Order reference
     Then
@@ -38,7 +38,7 @@ So I can display simple customers’ orders
 
 
     Given
-        Many customer have submitted orders for bricks
+        Many customerId have submitted orders for bricks
     When 
         A Get Orders request is submitted
     Then
@@ -52,7 +52,7 @@ I want to update orders for bricks
 So I can update customers’ orders
 
     Given
-        A customer has ordered a number of bricks
+        A customerId has ordered a number of bricks
     When 
         A Update Order request for an existing order reference and a number of bricks is submitted
     Then
