@@ -13,6 +13,6 @@ class Config {
   @Bean
   @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   public SubmissionId submissionId() {
-    return SubmissionId.of(UUID.randomUUID().toString());
+    return Builders.newSubmissionId(UUID.randomUUID().toString());
   }
 }

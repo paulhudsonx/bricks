@@ -8,38 +8,27 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
 @Access(AccessType.PROPERTY)
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class BrickOrder {
-
-  private Long id;
-  private String reference;
-  private int quantity;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
+  private Long id;
 
   @Column(unique = true)
-  public String getReference() {
-    return reference;
-  }
+  private String reference;
 
-  public void setReference(String reference) {
-    this.reference = reference;
-  }
-
-  public int getQuantity() {
-    return quantity;
-  }
-
-  public void setQuantity(int quantity) {
-    this.quantity = quantity;
-  }
+  private int quantity;
 }

@@ -1,5 +1,9 @@
 package com.caci.bricks.orders.service;
 
+import static com.caci.bricks.orders.service.Builders.newOrderQuantity;
+import static com.caci.bricks.orders.service.Builders.newOrderReference;
+import static com.caci.bricks.orders.service.Builders.newSubmissionId;
+
 import java.util.Optional;
 
 import org.springframework.beans.factory.ObjectFactory;
@@ -25,20 +29,24 @@ public class BrickOrderingService {
   public OrderReference startCustomerOrder(CustomerOrder customerOrder) {
     SubmissionId submissionId = submissionIdObjectFactory.getObject();
 
-    BrickOrder brickOrder = new BrickOrder();
-    brickOrder.setReference(submissionId.getIdentifier());
-    brickOrder.setQuantity(customerOrder.getOrderQuantity().getQuantity());
-    brickOrderRepository.save(brickOrder);
+    brickOrderRepository.save(
+      BrickOrder.builder()
+        .reference(submissionId.getIdentifier())
+        .quantity(customerOrder.getOrderQuantity().getQuantity())
+        .build()
+    );
 
-    return OrderReference.of(submissionId);
+    return newOrderReference(submissionId);
   }
 
   public Optional<CustomerOrderDetail> findOrder(OrderReference orderReference) {
-    Optional<BrickOrder> brickOrder = brickOrderRepository.findBrickOrderByReference(orderReference.getSubmissionId().getIdentifier());
-    return brickOrder.map(
-      b -> CustomerOrderDetail.of(
-        OrderReference.of(SubmissionId.of(b.getReference())),
-        OrderQuantity.of(b.getQuantity()))
+    return brickOrderRepository.findBrickOrderByReference(
+        orderReference.getSubmissionId().getIdentifier())
+      .map(
+        brickOrder -> Builders.customerOrderDetailBuilder()
+          .orderReference(newOrderReference(newSubmissionId(brickOrder.getReference())))
+          .orderQuantity(newOrderQuantity(brickOrder.getQuantity()))
+          .build()
       ).or(Optional::empty);
   }
 }

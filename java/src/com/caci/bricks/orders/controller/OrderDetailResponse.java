@@ -1,57 +1,19 @@
 package com.caci.bricks.orders.controller;
 
+import com.caci.bricks.orders.service.OrderQuantity;
+import com.caci.bricks.orders.service.SubmissionId;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 class OrderDetailResponse {
-  private String orderReference;
-  private int quantity;
+  private final String orderReference;
+  private final int quantity;
 
-  public OrderDetailResponse() {
-  }
-
-  private OrderDetailResponse(Builder builder) {
-    orderReference = builder.orderReference;
-    quantity = builder.quantity;
-  }
-
-  public static Builder newBuilder() {
-    return new Builder();
-  }
-
-  public static final class Builder {
-
-    private String orderReference;
-    private int quantity;
-
-    private Builder() {
-    }
-
-    public Builder withOrderReference(String val) {
-      orderReference = val;
-      return this;
-    }
-
-    public Builder withQuantity(int val) {
-      quantity = val;
-      return this;
-    }
-
-    public OrderDetailResponse build() {
-      return new OrderDetailResponse(this);
-    }
-  }
-
-  public void setOrderReference(String orderReference) {
-    this.orderReference = orderReference;
-  }
-
-  public void setQuantity(int quantity) {
-    this.quantity = quantity;
-  }
-
-  public String getOrderReference() {
-    return orderReference;
-  }
-
-  public int getQuantity() {
-    return quantity;
+  static OrderDetailResponse of(SubmissionId submissionId, OrderQuantity orderQuantity) {
+    return new OrderDetailResponse(submissionId.getIdentifier(), orderQuantity.getQuantity());
   }
 }
