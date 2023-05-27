@@ -1,5 +1,9 @@
 package com.caci.bricks.orders.service;
 
+import static com.caci.bricks.orders.service.Builders.newCustomerOrder;
+import static com.caci.bricks.orders.service.Builders.newOrderQuantity;
+import static com.caci.bricks.orders.service.Builders.newOrderReference;
+import static com.caci.bricks.orders.service.Builders.newSubmissionId;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
@@ -41,17 +45,15 @@ public class BrickOrderingServiceTest {
   @DisplayName("Given a valid customer order when the customer order started then a unique reference is returned")
   public void shouldStartCustomerOrderWithUniqueReference() {
     //given
-    CustomerOrder customerOrder = CustomerOrderBuilder.newBuilder()
-      .withOrderQuantity(OrderQuantity.of(1))
-      .build();
+    CustomerOrder customerOrder = newCustomerOrder(newOrderQuantity(1));
 
-    when(submissionIdObjectFactory.getObject()).thenReturn(SubmissionId.of("bar"));
+    when(submissionIdObjectFactory.getObject()).thenReturn(newSubmissionId("bar"));
 
     //when
     OrderReference actual = brickOrderingService.startCustomerOrder(customerOrder);
 
     //then
-    assertThat(actual.getSubmissionId().getIdentifier(), is("bar"));
+    assertThat(actual, samePropertyValuesAs(newOrderReference(newSubmissionId("bar"))));
     verify(brickOrderRepository).save(any());
   }
 
@@ -59,28 +61,26 @@ public class BrickOrderingServiceTest {
   @DisplayName("Given a valid customer order when the customer order started then a new order is saved")
   public void shouldSaveCustomerOrder() {
     //given
-    CustomerOrder customerOrder = CustomerOrderBuilder.newBuilder()
-      .withOrderQuantity(OrderQuantity.of(1))
-      .build();
-    when(submissionIdObjectFactory.getObject()).thenReturn(SubmissionId.of("bar"));
+    CustomerOrder customerOrder = newCustomerOrder(newOrderQuantity(1));
+    when(submissionIdObjectFactory.getObject()).thenReturn(newSubmissionId("bar"));
 
     //when
     brickOrderingService.startCustomerOrder(customerOrder);
 
     //then
     verify(brickOrderRepository).save(brickOrder.capture());
-    assertThat(brickOrder.getValue().getQuantity(), is(1));
-    assertThat(brickOrder.getValue().getReference(), is("bar"));
+    assertThat(brickOrder.getValue(), samePropertyValuesAs(BrickOrder.builder().quantity(1).reference("bar").build()));
   }
 
   @Test
   @DisplayName("Should find an existing order when order reference matches")
   public void shouldFindExistingCustomerOrder() {
     //given
-    OrderReference orderReference = OrderReference.of(SubmissionId.of("abc"));
-    BrickOrder brickOrder1 = new BrickOrder();
-    brickOrder1.setReference("abc");
-    brickOrder1.setQuantity(10);
+    OrderReference orderReference = newOrderReference(newSubmissionId("abc"));
+    BrickOrder brickOrder1 = BrickOrder.builder()
+      .reference("abc")
+      .quantity(10)
+      .build();
     when(brickOrderRepository.findBrickOrderByReference("abc")).thenReturn(Optional.of(brickOrder1));
 
     //when
@@ -88,15 +88,16 @@ public class BrickOrderingServiceTest {
 
     //then
     assertThat(actual.isPresent(), is(true));
-    assertThat(actual.get().getOrderQuantity(), samePropertyValuesAs(OrderQuantity.of(10)));
-    assertThat(actual.get().getOrderReference().getSubmissionId(), samePropertyValuesAs(SubmissionId.of("abc")));
+    assertThat(actual.get().getOrderQuantity(), samePropertyValuesAs(newOrderQuantity(10)));
+    assertThat(actual.get().getOrderReference().getSubmissionId(),
+      samePropertyValuesAs(newSubmissionId("abc")));
   }
 
   @Test
   @DisplayName("Should not find an existing order when order reference does not match")
   public void shouldNotFindExistingCustomerOrder() {
     //given
-    OrderReference orderReference = OrderReference.of(SubmissionId.of("abc"));
+    OrderReference orderReference = newOrderReference(newSubmissionId("abc"));
     when(brickOrderRepository.findBrickOrderByReference("abc")).thenReturn(Optional.empty());
 
     //when

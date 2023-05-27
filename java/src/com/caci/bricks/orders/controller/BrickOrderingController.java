@@ -15,13 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.caci.bricks.orders.service.BrickOrderingService;
-import com.caci.bricks.orders.service.CustomerId;
+import com.caci.bricks.orders.service.Builders;
 import com.caci.bricks.orders.service.CustomerOrder;
-import com.caci.bricks.orders.service.CustomerOrderBuilder;
 import com.caci.bricks.orders.service.CustomerOrderDetail;
-import com.caci.bricks.orders.service.OrderQuantity;
 import com.caci.bricks.orders.service.OrderReference;
-import com.caci.bricks.orders.service.SubmissionId;
 
 @RestController
 class BrickOrderingController {
@@ -36,30 +33,26 @@ class BrickOrderingController {
   ResponseEntity<OrderReferenceResponse> startOrder(
     @RequestBody @Valid InitialCustomerOrderRequest initialCustomerOrderRequest
   ) {
-    CustomerOrder customerOrder = CustomerOrderBuilder.newBuilder()
-      .withOrderQuantity(OrderQuantity.of(initialCustomerOrderRequest.getQuantity()))
-      .withCustomerId(CustomerId.of(initialCustomerOrderRequest.getCustomerId()))
-      .build();
+    CustomerOrder customerOrder = Builders.newCustomerOrder(
+        Builders.newOrderQuantity(initialCustomerOrderRequest.getQuantity())
+      );
 
     OrderReference orderReference = brickOrderingService.startCustomerOrder(customerOrder);
 
     return ResponseEntity.status(HttpStatus.CREATED)
-      .body(OrderReferenceResponse.Builder.newBuilder()
-        .withSubmissionId(orderReference.getSubmissionId().getIdentifier())
-        .build());
+      .body(OrderReferenceResponse.of(orderReference.getSubmissionId()));
   }
 
   @GetMapping("/bricks/find-order/{id}")
   public @ResponseBody ResponseEntity<OrderDetailResponse> findOrderDetails(@PathVariable("id") String orderReference) {
 
-    Optional<CustomerOrderDetail> customerOrderDetail = brickOrderingService.findOrder(OrderReference.of(SubmissionId.of(orderReference)));
+    Optional<CustomerOrderDetail> customerOrderDetail = brickOrderingService.findOrder(
+      Builders.newOrderReference(Builders.newSubmissionId(orderReference))
+    );
 
     return customerOrderDetail.map(orderDetail -> ResponseEntity.status(HttpStatus.OK)
       .body(
-        OrderDetailResponse.newBuilder()
-          .withOrderReference(orderDetail.getOrderReference().getSubmissionId().getIdentifier())
-          .withQuantity(orderDetail.getOrderQuantity().getQuantity())
-          .build()
+        OrderDetailResponse.of(orderDetail.getOrderReference().getSubmissionId(), orderDetail.getOrderQuantity())
       )).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 }
