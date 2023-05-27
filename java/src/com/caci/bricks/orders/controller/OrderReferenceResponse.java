@@ -6,8 +6,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Getter
 class OrderReferenceResponse {
-  private final @Getter String submissionId;
+  private final String submissionId;
 
   static OrderReferenceResponse of(SubmissionId submissionId) {
     return new OrderReferenceResponse(submissionId.getIdentifier());

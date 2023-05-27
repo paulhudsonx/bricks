@@ -8,9 +8,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 class OrderDetailResponse {
-  private final @Getter String orderReference;
-  private final @Getter int quantity;
+  private final String orderReference;
+  private final int quantity;
 
   static OrderDetailResponse of(SubmissionId submissionId, OrderQuantity orderQuantity) {
     return new OrderDetailResponse(submissionId.getIdentifier(), orderQuantity.getQuantity());
