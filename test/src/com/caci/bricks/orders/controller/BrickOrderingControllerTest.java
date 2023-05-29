@@ -3,6 +3,9 @@ package com.caci.bricks.orders.controller;
 import static io.restassured.RestAssured.with;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -78,5 +81,38 @@ class BrickOrderingControllerTest {
       .statusCode(200)
       .body("orderReference", is(existingOrder.getSubmissionId()))
       .body("quantity", is(10));
+  }
+
+  @Test
+  @DisplayName("Should return all order details if multiple customer orders exist")
+  void findOrdersDetails() {
+    // Create an order 1
+    OrderReferenceResponse orderReferenceResponse1 = with()
+      .body(InitialCustomerOrderRequest.of("Customer1", 10))
+      .contentType(ContentType.JSON)
+      .request("POST", "/bricks/start-order")
+      .as(OrderReferenceResponse.class);
+    // Create an order 2
+    OrderReferenceResponse orderReferenceResponse2 = with()
+      .body(InitialCustomerOrderRequest.of("Customer2", 20))
+      .contentType(ContentType.JSON)
+      .request("POST", "/bricks/start-order")
+      .as(OrderReferenceResponse.class);
+
+    // Verify order
+    OrderDetailResponse [] orderDetailResponses = with()
+      .given().log().all()
+      .when()
+      .request("GET", "/bricks/find-orders/")
+      .then()
+      .log().body()
+      .assertThat()
+      .statusCode(200)
+      .body("size()", is(2))
+      .extract()
+      .as(OrderDetailResponse[].class);
+
+    assertThat(orderDetailResponses, is(List.of(OrderDetailResponse.of(orderReferenceResponse1.getSubmissionId(),
+          10), OrderDetailResponse.of(orderReferenceResponse2.getSubmissionId(), 20)).toArray()));
   }
 }

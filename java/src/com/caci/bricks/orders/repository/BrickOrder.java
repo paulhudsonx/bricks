@@ -17,18 +17,24 @@ import lombok.Setter;
 @Entity
 @Access(AccessType.PROPERTY)
 @Builder
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class BrickOrder {
 
+  private Long id;
+  private String reference;
+  private int quantity;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  public Long getId() {
+    return id;
+  }
 
   @Column(unique = true)
-  private String reference;
-
-  private int quantity;
+  public String getReference() {
+    return reference;
+  }
 }

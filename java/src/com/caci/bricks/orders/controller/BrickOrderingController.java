@@ -1,6 +1,8 @@
 package com.caci.bricks.orders.controller;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -54,5 +56,18 @@ class BrickOrderingController {
       .body(
         OrderDetailResponse.of(orderDetail.getOrderReference().getSubmissionId(), orderDetail.getOrderQuantity())
       )).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+  }
+
+  @GetMapping("/bricks/find-orders")
+  public @ResponseBody ResponseEntity<List<OrderDetailResponse>> findOrdersDetails() {
+
+    List<CustomerOrderDetail> customerOrderDetail = brickOrderingService.findOrders();
+
+    return ResponseEntity.status(HttpStatus.OK)
+      .body(
+        customerOrderDetail.stream()
+            .map(orderDetail -> OrderDetailResponse.of(orderDetail.getOrderReference().getSubmissionId(), orderDetail.getOrderQuantity()))
+          .collect(Collectors.toUnmodifiableList())
+      );
   }
 }
