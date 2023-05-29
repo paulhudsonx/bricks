@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,6 +111,19 @@ public class BrickOrderingServiceTest {
 
     //then
     assertThat(actual.isPresent(), is(false));
+  }
+
+  @Test
+  @DisplayName("Should find an empty list if no existing orders")
+  public void shouldFindEmptyListIfNoExistingCustomerOrders() {
+    //given
+    when(brickOrderRepository.findAll()).thenReturn(Collections.emptyList());
+
+    //when
+    List<CustomerOrderDetail> actual = brickOrderingService.findOrders();
+
+    //then
+    assertThat(actual.size(), is(0));
   }
 
   @Test
