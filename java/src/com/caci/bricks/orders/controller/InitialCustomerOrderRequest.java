@@ -3,10 +3,11 @@ package com.caci.bricks.orders.controller;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 class InitialCustomerOrderRequest {
   @NotNull

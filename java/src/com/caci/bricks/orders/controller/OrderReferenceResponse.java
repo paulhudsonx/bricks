@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @EqualsAndHashCode
 class OrderReferenceResponse {
-  private String submissionId;
+  private String orderReference;
 
   static OrderReferenceResponse of(SubmissionId submissionId) {
     return new OrderReferenceResponse(submissionId.getIdentifier());
