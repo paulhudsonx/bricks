@@ -1,16 +1,20 @@
 package com.caci.bricks.orders.service;
 
+import static com.caci.bricks.orders.service.Builders.customerOrderDetailBuilder;
 import static com.caci.bricks.orders.service.Builders.newCustomerOrder;
 import static com.caci.bricks.orders.service.Builders.newOrderQuantity;
 import static com.caci.bricks.orders.service.Builders.newOrderReference;
 import static com.caci.bricks.orders.service.Builders.newSubmissionId;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -69,7 +73,8 @@ public class BrickOrderingServiceTest {
 
     //then
     verify(brickOrderRepository).save(brickOrder.capture());
-    assertThat(brickOrder.getValue(), samePropertyValuesAs(BrickOrder.builder().quantity(1).reference("bar").build()));
+    assertThat(brickOrder.getValue(),
+      samePropertyValuesAs(BrickOrder.builder().quantity(1).reference("bar").build()));
   }
 
   @Test
@@ -81,7 +86,8 @@ public class BrickOrderingServiceTest {
       .reference("abc")
       .quantity(10)
       .build();
-    when(brickOrderRepository.findBrickOrderByReference("abc")).thenReturn(Optional.of(brickOrder1));
+    when(brickOrderRepository.findBrickOrderByReference("abc")).thenReturn(
+      Optional.of(brickOrder1));
 
     //when
     Optional<CustomerOrderDetail> actual = brickOrderingService.findOrder(orderReference);
@@ -105,5 +111,41 @@ public class BrickOrderingServiceTest {
 
     //then
     assertThat(actual.isPresent(), is(false));
+  }
+
+  @Test
+  @DisplayName("Should find an empty list if no existing orders")
+  public void shouldFindEmptyListIfNoExistingCustomerOrders() {
+    //given
+    when(brickOrderRepository.findAll()).thenReturn(Collections.emptyList());
+
+    //when
+    List<CustomerOrderDetail> actual = brickOrderingService.findOrders();
+
+    //then
+    assertThat(actual.size(), is(0));
+  }
+
+  @Test
+  @DisplayName("Should find all existing orders")
+  public void shouldFindAllExistingCustomerOrders() {
+    //given
+    BrickOrder brickOrder1 = BrickOrder.builder()
+      .reference("abc")
+      .quantity(10)
+      .build();
+    when(brickOrderRepository.findAll()).thenReturn(List.of(brickOrder1));
+
+    //when
+    List<CustomerOrderDetail> actual = brickOrderingService.findOrders();
+
+    //then
+    assertThat(actual.size(), is(1));
+    assertThat(actual, contains(
+      customerOrderDetailBuilder()
+        .orderReference(newOrderReference(newSubmissionId("abc")))
+        .orderQuantity(newOrderQuantity(10))
+        .build()
+    ));
   }
 }

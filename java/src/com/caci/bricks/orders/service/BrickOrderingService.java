@@ -4,7 +4,10 @@ import static com.caci.bricks.orders.service.Builders.newOrderQuantity;
 import static com.caci.bricks.orders.service.Builders.newOrderReference;
 import static com.caci.bricks.orders.service.Builders.newSubmissionId;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +51,17 @@ public class BrickOrderingService {
           .orderQuantity(newOrderQuantity(brickOrder.getQuantity()))
           .build()
       ).or(Optional::empty);
+  }
+
+  public List<CustomerOrderDetail> findOrders() {
+    return StreamSupport.stream(brickOrderRepository.findAll()
+        .spliterator(), false)
+      .map(
+        brickOrder -> Builders.customerOrderDetailBuilder()
+          .orderReference(newOrderReference(newSubmissionId(brickOrder.getReference())))
+          .orderQuantity(newOrderQuantity(brickOrder.getQuantity()))
+          .build()
+      )
+      .collect(Collectors.toUnmodifiableList());
   }
 }

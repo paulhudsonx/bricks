@@ -2,13 +2,18 @@ package com.caci.bricks.orders.controller;
 
 import com.caci.bricks.orders.service.SubmissionId;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
+@EqualsAndHashCode
 class OrderReferenceResponse {
-  private final String submissionId;
+  private String submissionId;
 
   static OrderReferenceResponse of(SubmissionId submissionId) {
     return new OrderReferenceResponse(submissionId.getIdentifier());
