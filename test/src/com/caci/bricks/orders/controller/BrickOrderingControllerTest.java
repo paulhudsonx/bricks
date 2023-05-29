@@ -74,12 +74,12 @@ class BrickOrderingControllerTest {
     with()
       .given().log().all()
       .when()
-      .request("GET", "/bricks/find-order/" + existingOrder.getSubmissionId())
+      .request("GET", "/bricks/find-order/" + existingOrder.getOrderReference())
       .then()
       .log().body()
       .assertThat()
       .statusCode(200)
-      .body("orderReference", is(existingOrder.getSubmissionId()))
+      .body("orderReference", is(existingOrder.getOrderReference()))
       .body("quantity", is(10));
   }
 
@@ -112,7 +112,7 @@ class BrickOrderingControllerTest {
       .extract()
       .as(OrderDetailResponse[].class);
 
-    assertThat(orderDetailResponses, is(List.of(OrderDetailResponse.of(orderReferenceResponse1.getSubmissionId(),
-          10), OrderDetailResponse.of(orderReferenceResponse2.getSubmissionId(), 20)).toArray()));
+    assertThat(orderDetailResponses, is(List.of(OrderDetailResponse.of(orderReferenceResponse1.getOrderReference(),
+          10), OrderDetailResponse.of(orderReferenceResponse2.getOrderReference(), 20)).toArray()));
   }
 }
